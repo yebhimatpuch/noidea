@@ -1,0 +1,110 @@
+int left_ir, right_ir, prev_l, prev_r, dif_l, dif_r;
+int counter = 0;
+
+void setup() {
+  for (int i = 5; i <= 8; i++) {
+    pinMode(i, OUTPUT);
+  }
+
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+
+  Serial.begin(9600);
+}
+
+void forward() {
+  digitalWrite(5, HIGH);
+  digitalWrite(8, HIGH);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+}
+
+void backward() {
+  digitalWrite(5, LOW);
+  digitalWrite(8, LOW);
+  digitalWrite(6, HIGH);
+  digitalWrite(7, HIGH);
+}
+
+void stop() {
+  digitalWrite(5, LOW);
+  digitalWrite(8, LOW);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+}
+void left() {
+  digitalWrite(5, HIGH);
+  digitalWrite(8, LOW);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+}
+
+void right() {
+  digitalWrite(5, LOW);
+  digitalWrite(8, HIGH);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+}
+
+void clockwise() {
+  digitalWrite(5, HIGH);  
+  digitalWrite(8, LOW);
+  digitalWrite(6, HIGH);
+  digitalWrite(7, LOW);
+}
+
+void anticlockwise() {
+  digitalWrite(5, LOW);
+  digitalWrite(8, HIGH);  
+  digitalWrite(6, LOW);
+  digitalWrite(7, HIGH);  
+}
+
+
+
+void movement() {
+  forward();
+  delay(2000);
+  backward();
+  delay(2000);
+  left();
+  delay(2000);
+  right();
+  delay(2000);
+}
+
+void loop() {
+  left_ir = digitalRead(A0);
+  right_ir = digitalRead(A2);
+
+  if (right_ir == 0 && left_ir == 1) {
+    left();
+  } else if (right_ir == 1 && left_ir == 0) {
+    right();
+  } else if (right_ir == 0 && left_ir == 0) {
+    prev_l = left_ir;
+    prev_r = right_ir;
+  } else if (left_ir == 1 && right_ir == 1) {
+    forward();
+    dif_l = left_ir - prev_l;
+    dif_r = right_ir - prev_r;
+    if(dif_l && dif_r){
+      counter++; 
+      Serial.println(counter);
+      prev_l = left_ir;
+      prev_r = right_ir;
+    }
+    if (counter == 3){
+      forward();
+      delay(100);
+    } else if (counter == 5){
+      right();
+      delay(100);
+      forward();
+    } else if (counter == 7){
+      stop();
+      Serial.println("~Reached final parking spot!!~");
+      while(true);
+    }
+  }
+}
